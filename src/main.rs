@@ -11,13 +11,12 @@ fn main() -> std::io::Result<()> {
         loop {
             let mut buffer = [0; 10];
             let (amt, src) = socket.recv_from(&mut buffer)?;
-            let request = str::from_utf8(&buffer).unwrap().to_string();
+            let buffer = &mut buffer[..amt];
+            let request = str::from_utf8(&buffer).unwrap().trim();
 
-            match request.as_str() {
+            match request {
                 "exit" => return Ok(()),
-                _ => {
-                    println!("requested {}", request);
-                }
+                _ => println!("requested {}", request)
             }
 
             let buffer = &mut buffer[..amt];
