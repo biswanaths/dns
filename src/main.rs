@@ -5,7 +5,7 @@ fn main() -> std::io::Result<()> {
         let socket = UdpSocket::bind("127.0.0.1:34001")?;
 
         loop {
-            let mut buffer = [0; 10];
+            let mut buffer = [0; 100];
             let (amt, src) = socket.recv_from(&mut buffer)?;
             let buffer = &mut buffer[..amt];
             let request = str::from_utf8(buffer).unwrap().trim();
@@ -14,8 +14,6 @@ fn main() -> std::io::Result<()> {
                 "exit" => return Ok(()),
                 _ => println!("requested {}", request)
             }
-
-            let buffer = &mut buffer[..amt];
 
             buffer.reverse();
             socket.send_to(buffer, src)?;
