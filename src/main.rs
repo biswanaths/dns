@@ -37,10 +37,10 @@ fn main() -> std::io::Result<()> {
 
         let query = Name::from_str(request).unwrap();
         let response: DnsResponse = client.query(&query, DNSClass::IN, RecordType::A).unwrap();
-        println!("Answers {}", response.answers()[0]);
 
-        if response.contains_answer() {
-            socket.send_to(response.answers()[0].to_string().as_bytes(), src)?;
+        for answer in response.answers() {
+            socket.send_to(answer.to_string().as_bytes(), src)?;
+            socket.send_to("\n".as_bytes(), src)?;
         }
     }
 }
