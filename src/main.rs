@@ -9,7 +9,7 @@ use trust_dns_client::udp::UdpClientConnection;
 
 struct DnsHeaderFlags {
     pub qr      : bool,
-    pub opcode  : u8,   // should this be enum values are 0,1,2, two bits should be sufficient, The type can be QUERY (standard query, 0), IQUERY (inverse query, 1), or STATUS (server status request, 2).
+    pub opcode  : u8,   // should this be enum? values are 0,1,2, two bits should be sufficient, The type can be QUERY (standard query, 0), IQUERY (inverse query, 1), or STATUS (server status request, 2).
     pub aa      : bool, // authorative answer
     pub tc      : bool, // truncation, if the message is truncated
     pub rd      : bool, // recursive needed for query
