@@ -6,9 +6,20 @@ use trust_dns_client::op::DnsResponse;
 use trust_dns_client::rr::{DNSClass, Name, RData, Record, RecordType};
 use trust_dns_client::udp::UdpClientConnection;
 
-struct Query {
-    x: u8,
+
+struct DnsHeaderFlags {
+    pub qr      : bool,
+    pub opcode  : u8,   // should this be enum values are 0,1,2, two bits should be sufficient, The type can be QUERY (standard query, 0), IQUERY (inverse query, 1), or STATUS (server status request, 2).
+    pub aa      : bool, // authorative answer
+    pub tc      : bool, // truncation, if the message is truncated
+    pub rd      : bool, // recursive needed for query
+    pub ra      : bool, // recursion availabe, in a response
+    pub z       : bool, // future use not used currently
+    pub ad      : bool, // if the dns server verified data, in response
+    pub cd      : bool, // verification disabled, in query, stating no verifiable data is acceptable in a response
+    pub rcode   : u8,   // Response code, can be NOERROR (0), FORMERR (1, Format error), SERVFAIL (2), NXDOMAIN (3, Nonexistent domain)
 }
+
 
 fn main() -> std::io::Result<()> {
     println!("startign the dns server");
@@ -21,14 +32,16 @@ fn main() -> std::io::Result<()> {
     let response: DnsResponse = client.query(&name, DNSClass::IN, RecordType::A).unwrap();
     println!("Answers {}", response.answers()[0]);
 
+
     loop {
-        println!("inside loop");
+        println!("listening inside loop");
         let mut buffer = [0; 100];
         let (amt, src) = socket.recv_from(&mut buffer)?;
         let buffer = &mut buffer[..amt];
         let request = str::from_utf8(buffer).unwrap().trim();
 
         println!("recieved request {}", request);
+        println!("There is something in the rain.");
 
         match request {
             "exit" => return Ok(()),
@@ -37,6 +50,7 @@ fn main() -> std::io::Result<()> {
 
         let query = Name::from_str(request).unwrap();
         let response: DnsResponse = client.query(&query, DNSClass::IN, RecordType::A).unwrap();
+        println!("response is {}", response.to_string());
 
         for answer in response.answers() {
             socket.send_to(answer.to_string().as_bytes(), src)?;
