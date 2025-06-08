@@ -20,6 +20,17 @@ struct DnsHeaderFlags {
     pub rcode   : u8,   // Response code, can be NOERROR (0), FORMERR (1, Format error), SERVFAIL (2), NXDOMAIN (3, Nonexistent domain)
 }
 
+struct DnsHeader {
+    pub id      : u16,  // transaction id
+    pub flags   : DnsHeaderFlags,
+    pub qdcount : u16,  // Number of questions
+    pub ancount : u16,  // Number of answers
+    pub ns      : u16,  // Number of authority records
+    pub arcount : u16,  // Number of additional records
+}
+
+
+
 
 fn main() -> std::io::Result<()> {
     println!("startign the dns server");
